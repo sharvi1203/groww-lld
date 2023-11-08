@@ -63,6 +63,7 @@ public class TestingSpringApplication {
         try {
             order = orderManagementService.placeOrder(orderView);
             log.info("Order orderid "+ order.orderId);
+            log.info("Order quantity "+ order.quantity);
         }catch(InSufficientBalanceException inSufficientBalanceException){
             log.error("Insufficient Balance");
         }
@@ -81,15 +82,17 @@ public class TestingSpringApplication {
                 .userId(1)
                 .stockId(1)
                 .build();
+        Order order2 = null;
         try {
-            order = orderManagementService.placeOrder(orderView1);
-            log.info("Order orderid "+ order.orderId);
+            order2 = orderManagementService.placeOrder(orderView1);
+            log.info("Order orderid "+ order2.orderId);
+            log.info("Order quantity "+ order2.quantity);
         }catch(InSufficientBalanceException inSufficientBalanceException){
             log.error("Insufficient Balance");
         }
         money =  userService.viewMoney(1);
         log.info("Update Money in wallet "+ money);
-        exchangeClient.updateOrder(order, EventResponse.EVENT_ORDER_COMPLETED);
+        exchangeClient.updateOrder(order2, EventResponse.EVENT_ORDER_COMPLETED);
         orderStatus = orderManagementService.viewOrder(2);
         log.info("Order Status "+orderStatus.name());
         money =  userService.viewMoney(1);

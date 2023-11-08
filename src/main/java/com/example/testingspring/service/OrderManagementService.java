@@ -9,9 +9,11 @@ import com.example.testingspring.model.OrderType;
 import com.example.testingspring.model.StockInventory;
 import com.example.testingspring.view.OrderView;
 import com.sun.org.apache.xpath.internal.operations.Or;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 
+@Slf4j
 public class OrderManagementService {
 
     public HashMap<Integer, Order> orderHashMap;
@@ -54,6 +56,7 @@ public class OrderManagementService {
                 .orderType(orderView.orderType)
                 .userId(orderView.userId)
                 .stockId(orderView.stockId)
+                .quantity(orderView.quantity)
                 .build();
         getOrderHashMap().put(order1.orderId , order1);
         exchangeClient.updateOrder(order1, EventResponse.EVENT_ORDER_INITIATED);
@@ -70,7 +73,12 @@ public class OrderManagementService {
         if(order.orderStatus.equals(OrderStatus.COMPLETED) && order.orderType.equals(OrderType.SELL)){
             int userAmount  = userService.getUserMap().get(order.userId).getUserBalance().amount;
             StockInventory stockInventory1 = stockManagemnetService.getStockInventoryHashMap().get(order.stockId);
-            userService.getUserMap().get(order.userId).getUserBalance().amount =  userAmount +  stockInventory1.pricePerShare * order.quantity;
+            log.info("User Amount" + userAmount);
+            log.info("Stock Amount "+ stockInventory1.pricePerShare);
+            log.info("Quantity  "+ order.quantity);
+            userService.getUserMap().get(order.userId).getUserBalance().amount+=stockInventory1.pricePerShare * order.quantity;
+            userAmount = userService.getUserMap().get(order.userId).getUserBalance().amount;
+            log.info("User Amount" + userAmount);
         }
         return order.orderStatus;
     }
